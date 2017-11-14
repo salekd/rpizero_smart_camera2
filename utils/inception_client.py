@@ -14,6 +14,7 @@ from tensorflow_serving.apis import prediction_service_pb2
 
 
 def inception_client_main(_):
+    FLAGS = tf.app.flags.FLAGS
     host, port = FLAGS.server.split(':')
     channel = implementations.insecure_channel(host, int(port))
     stub = prediction_service_pb2.beta_create_PredictionService_stub(channel)
@@ -33,7 +34,6 @@ def inception_client_main(_):
 
 
 def query_tf_server(filename_local, server):
-    tf.app.flags.DEFINE_string('image', filename_local)
-    tf.app.flags.DEFINE_string('server', server)
-    FLAGS = tf.app.flags.FLAGS
+    tf.app.flags.DEFINE_string('image', filename_local, 'path to image in JPEG format')
+    tf.app.flags.DEFINE_string('server', server, 'PredictionService host:port')
     tf.app.run(inception_client_main)
