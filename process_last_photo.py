@@ -30,6 +30,7 @@ def main():
     human_detected = False
     classes = res.result().outputs['classes'].string_val
     scores = res.result().outputs['scores'].float_val
+    print("\n".join(["{}: {}".format(c, s) for (c, s) in zip(classes, scores)]))
     for (c, s) in zip(classes, scores):
         if c == 'person' and s > 0.5:
             human_detected = True
