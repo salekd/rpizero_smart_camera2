@@ -40,7 +40,7 @@ def upload_file(filename_local, bucket_name, human_detected):
     # Uploads the given file using a managed uploader, which will split up large
     # files automatically and upload parts in parallel.
     print("Uploading file {} to Amazon S3".format(filename_s3))
-    s3.upload_file(filename_local, bucket_name, filename_s3)
+    s3.upload_file(filename_local, bucket_name, filename_s3, ExtraArgs={'ContentType': "image/jpeg", 'ACL': "public-read"})
 
     # Remove the image from the local file system
     print("Removing file {}".format(filename_local))
