@@ -1,10 +1,8 @@
 """
-This file contains the functions for TensorFlow Serving client requests.
+This file contains a function for TensorFlow Serving client requests.
 """
 
 from __future__ import print_function
-
-# This is a placeholder for a Google-internal import.
 
 from grpc.beta import implementations
 import tensorflow as tf
@@ -13,13 +11,20 @@ from tensorflow_serving.apis import predict_pb2
 from tensorflow_serving.apis import prediction_service_pb2
 
 
-def inception_client_main(_):
-    FLAGS = tf.app.flags.FLAGS
-    host, port = FLAGS.server.split(':')
+def query_tf_server(filename, server):
+    """
+    Query the server running the TensorFlow Serving of the Inception-v3 model.
+
+    :param filename: JPEG image filename
+    :param server: Server address in the format host:port
+    :return: PredictResponse object with the image classification results. 
+    """
+
+    host, port = server.split(':')
     channel = implementations.insecure_channel(host, int(port))
     stub = prediction_service_pb2.beta_create_PredictionService_stub(channel)
     # Send request
-    with open(FLAGS.image, 'rb') as f:
+    with open(filename, 'rb') as f:
         # See prediction_service.proto for gRPC request/response details.
         data = f.read()
         request = predict_pb2.PredictRequest()
@@ -28,12 +33,5 @@ def inception_client_main(_):
         request.inputs['images'].CopyFrom(
             tf.contrib.util.make_tensor_proto(data, shape=[1]))
         result = stub.Predict(request, 10.0)  # 10 secs timeout
-        print(result)
 
         return result
-
-
-def query_tf_server(filename_local, server):
-    tf.app.flags.DEFINE_string('image', filename_local, 'path to image in JPEG format')
-    tf.app.flags.DEFINE_string('server', server, 'PredictionService host:port')
-    tf.app.run(inception_client_main)
