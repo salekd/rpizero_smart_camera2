@@ -25,16 +25,15 @@ def main():
 
     # Identify objects in the picture using TensorFlow Serving
     res = query_tf_server(filename_local, server)
-    print res
-    print type(res)
     human_detected = False
-    classes = res.result().outputs['classes'].string_val
-    scores = res.result().outputs['scores'].float_val
-    print("\n".join(["{}: {}".format(c, s) for (c, s) in zip(classes, scores)]))
+    classes = res.outputs['classes'].string_val
+    scores = res.outputs['scores'].float_val
+    print("\n".join(["{0}: {1:.2f}".format(c, s) for (c, s) in zip(classes, scores)]))
     for (c, s) in zip(classes, scores):
-        if c == 'person' and s > 0.5:
+        if 'person' in c and s > 0.5:
             human_detected = True
             break
+    print("human_detected = {}".format(human_detected))
 
     # Upload file to S3 and remove the local copy
     url = upload_file(filename_local, bucket_name, human_detected)
@@ -42,7 +41,7 @@ def main():
     # Send e-mail notification
     if human_detected:
         subject = "Human detected"
-        body = "\n".join(["{}: {}".format(c, s) for (c, s) in zip(classes, scores)])
+        body = "\n".join(["{0}: {1:.2f}".format(c, s) for (c, s) in zip(classes, scores)])
         body += "\n\n{}".format(url)
         send_email(user, pwd, user, subject, body)
 
