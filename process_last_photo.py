@@ -2,7 +2,7 @@
 
 import ConfigParser
 import os
-from utils.inception_client import *
+from utils.tf_serving_client import *
 from utils.upload_file import *
 from utils.send_email import *
 
@@ -24,13 +24,11 @@ def main():
     filename_local = max(full_paths, key=os.path.getctime)
 
     # Identify objects in the picture using TensorFlow Serving
-    res = query_tf_server(filename_local, server)
+    classes, scores = query_mobilenet_server(filename_local, server)
     human_detected = False
-    classes = res.outputs['classes'].string_val
-    scores = res.outputs['scores'].float_val
     print("\n".join(["{0}: {1:.2f}".format(c, s) for (c, s) in zip(classes, scores)]))
     for (c, s) in zip(classes, scores):
-        if 'person' in c and s > 0.5:
+        if c == 'person' and s > 0.5:
             human_detected = True
             break
     print("human_detected = {}".format(human_detected))
