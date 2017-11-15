@@ -18,7 +18,7 @@ kind: Deployment
 metadata:
   name: inception-deployment
 spec:
-  replicas: 3
+  replicas: 1
   template:
     metadata:
       labels:
@@ -33,7 +33,7 @@ spec:
         - -c
         args:
         - serving/bazel-bin/tensorflow_serving/model_servers/tensorflow_model_server
-          --port=9000 --model_name=inception --model_base_path=/serving/inception-export
+          --port=9000 --model_name=inception --model_base_path=/tmp/inception-export
         ports:
         - containerPort: 9000
 ---
@@ -50,3 +50,4 @@ spec:
   selector:
     app: inception-server
   type: LoadBalancer
+  #type: NodePort
