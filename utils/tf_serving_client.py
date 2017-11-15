@@ -16,9 +16,6 @@ import numpy as np
 
 from object_detection.utils import label_map_util
 
-# List of the strings that is used to add correct label for each box.
-PATH_TO_LABELS = os.path.join('/tmp/vendored', 'object_detection', 'data', 'mscoco_label_map.pbtxt')
-
 NUM_CLASSES = 90
 
 label_map = label_map_util.load_labelmap("mscoco_label_map.pbtxt")
